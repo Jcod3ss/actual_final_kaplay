@@ -170,13 +170,7 @@ nn.on("load", () => {
       "enemy"
     ]);
     enemy.play("idle");
-    //Enemy timer spawn
-    wait(rand(2, 10), () => {
-      if (enemy.exists()) {
-        destroy(enemy);
-      }
-    })
-    // enemy timer
+
   }
 
   //Spawns in the enemies in a set wave; will later get rid of
