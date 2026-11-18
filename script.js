@@ -643,4 +643,9 @@ nn.on("load", () => {
 });
   
   go("level1");
+
+  play("bgm", {
+    volume: 0.4,
+    loop: true
+  });
 });  
