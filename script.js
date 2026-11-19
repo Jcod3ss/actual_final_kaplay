@@ -19,7 +19,10 @@ nn.on("load", () => {
   
   //Global Variables
   const SPEED = 200;
+  const BOOST_SPEED = 430;
   const JUMP_FORCE = 500;
+  let playerSpeed = SPEED;
+  let boostActive = false;
   let soundEffect, bgm;
   let isPlaying = false;
   let timeLeft = 300;
@@ -206,7 +209,9 @@ nn.on("load", () => {
         size: 24,
       }),
       pos(24, 24),
-      color(BLACK),
+      color(WHITE),
+      fixed(),
+      z(100),
     ]);
     
     //Shows how much energy you have
@@ -214,15 +219,19 @@ nn.on("load", () => {
       text(energy.toString(), {
         size: 24,
       }),
-      pos(24, 35),
-      color(BLACK),
+      pos(24, 55),
+      color(BLUE),
+      fixed(),
+      z(100),
     ]);
     
     const timer = add([
     text(timeLeft.toFixed(0)),
     pos(width() - 24, 24),
     anchor("topright"),
-    color(BLACK)
+    color(GREEN),
+      fixed(),
+      z(100),
     ]);
     
     //Adds player sprite to the game
@@ -276,7 +285,7 @@ nn.on("load", () => {
     //Player Controls
     onButtonDown("moveRight", () => {
       // move right
-      player.move(SPEED, 0);
+      player.move(playerSpeed, 0);
       facing = RIGHT;
       playSoundEffect();
       player.play("run");
@@ -284,7 +293,7 @@ nn.on("load", () => {
 
     onButtonDown("moveLeft", () => {
       // move left
-      player.move(-SPEED, 0);
+      player.move(-playerSpeed, 0);
       facing = LEFT;
       playSoundEffect();
       player.play("run");
@@ -347,6 +356,15 @@ nn.on("load", () => {
       play("drink");
       energy++;
       energyText.text = energy.toString();
+      
+      //speed boost
+      playerSpeed = BOOST_SPEED;
+      boostActive = true;
+      //boost timer
+      wait(5,() => {
+        playerSpeed = SPEED;
+        boostActive = false;
+      });
     });
 
 
@@ -410,7 +428,9 @@ nn.on("load", () => {
         size: 24,
       }),
       pos(24, 24),
-      color(BLACK),
+      color(WHITE),
+      fixed(),
+      z(100),
     ]);
     
     //Shows how much energy you have
@@ -418,15 +438,19 @@ nn.on("load", () => {
       text(energy.toString(), {
         size: 24,
       }),
-      pos(24, 35),
-      color(BLACK),
+      pos(24, 55),
+      color(BLUE),
+      fixed(),
+      z(100,)
     ]);
     
     const timer = add([
     text(timeLeft.toFixed(0)),
     pos(width() - 24, 24),
     anchor("topright"),
-    color(WHITE)
+    color(GREEN),
+      fixed(),
+      z(100),
     ]);
     
     //Adds player sprite to the game
@@ -482,7 +506,7 @@ nn.on("load", () => {
     //Player Controls
     onButtonDown("moveRight", () => {
       // move right
-      player.move(SPEED, 0);
+      player.move(playerSpeed, 0);
       facing = RIGHT;
       playSoundEffect();
       player.play("run");
@@ -490,7 +514,7 @@ nn.on("load", () => {
 
     onButtonDown("moveLeft", () => {
       // move left
-      player.move(-SPEED, 0);
+      player.move(-playerSpeed, 0);
       facing = LEFT;
       playSoundEffect();
       player.play("run");
@@ -552,6 +576,14 @@ nn.on("load", () => {
       play("drink");
       energy++;
       energyText.text = energy.toString();
+       //speed boost
+      playerSpeed = BOOST_SPEED;
+      boostActive = true;
+      //boost timer
+      wait(5,() => {
+        playerSpeed = SPEED;
+        boostActive = false;
+      });
     });
 
     player.onCollide("enemy", () => {
