@@ -361,7 +361,7 @@ nn.on("load", () => {
       playerSpeed = BOOST_SPEED;
       boostActive = true;
       //boost timer
-      wait(5,() => {
+      wait(6,() => {
         playerSpeed = SPEED;
         boostActive = false;
       });
@@ -580,7 +580,7 @@ nn.on("load", () => {
       playerSpeed = BOOST_SPEED;
       boostActive = true;
       //boost timer
-      wait(5,() => {
+      wait(6,() => {
         playerSpeed = SPEED;
         boostActive = false;
       });
