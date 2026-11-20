@@ -86,6 +86,8 @@ nn.on("load", () => {
   loadSprite("bg", "assets/game_bg.png");
   //Projectile
   loadSprite("knife", "assets/spell.png");
+  //portal
+  loadSprite("portal", "assets/portal.png");
   
   //Audio
   loadSound(
@@ -250,10 +252,12 @@ nn.on("load", () => {
 
     //Lvl Exit
     const levelExit = add([
-      rect(30, 140),
-      pos(2700, height() - 340),
+      sprite("portal"),
+     // rect(30, 140),
+      pos(2670, height() - 290),
       area(),
-      color(GREEN),
+      scale(3),
+      //color(GREEN),
       "levelExit"
     ]);
 
@@ -474,10 +478,12 @@ nn.on("load", () => {
 
     //Lvl Exit
     const levelExit = add([
-      rect(30, 140),
-      pos(2700, height() - 520),
+      sprite("portal"),
+     // rect(30, 140),
+      pos(2698, height() - 480),
       area(),
-      color(GREEN),
+      scale(3),
+      //color(GREEN),
       "levelExit"
     ]);
 
