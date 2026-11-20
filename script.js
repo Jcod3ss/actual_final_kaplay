@@ -164,7 +164,7 @@ nn.on("load", () => {
     const enemy = add([ //Later change this to where the platforms are actually placed
       sprite("enemy"),
       scale(2),
-      pos(rand(100, width() - 100), rand(100, height() - 100)),
+      pos(rand(100, width() - 100), rand(100, height() - 400)),
       area(),
       anchor("center"),
       "enemy"
@@ -216,7 +216,8 @@ nn.on("load", () => {
     text(timeLeft.toFixed(0)),
     pos(width() - 24, 24),
     anchor("topright"),
-    color(BLACK)
+    color(BLACK),
+    fixed()
     ]);
     
     //Adds player sprite to the game
