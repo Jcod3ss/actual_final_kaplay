@@ -19,7 +19,10 @@ nn.on("load", () => {
   
   //Global Variables
   const SPEED = 200;
+  const BOOST_SPEED = 430;
   const JUMP_FORCE = 500;
+  let playerSpeed = SPEED;
+  let boostActive = false;
   let soundEffect, bgm;
   let isPlaying = false;
   let timeLeft = 300;
@@ -83,6 +86,8 @@ nn.on("load", () => {
   loadSprite("bg", "assets/game_bg.png");
   //Projectile
   loadSprite("knife", "assets/spell.png");
+  //portal
+  loadSprite("portal", "assets/portal.png");
   
   //Audio
   loadSound(
@@ -113,10 +118,10 @@ nn.on("load", () => {
   }
   
   //Making Platforms with the sprite
-  function makePlatform (x, y) {
+  function makePlatform (x, y, w = 200) {
     add([
       //sprite("ground"),
-      rect(250, 40),
+      rect(w, 40),
       outline(6),
       scale(1),
       area(),
@@ -136,7 +141,7 @@ nn.on("load", () => {
       pos(rand(0, width()), rand(0, height())),
       scale(2),
       area(),
-      body(),
+      //body(), this is what caused the pot to fall
       anchor("center"),
       "pot"
     ]);
@@ -151,7 +156,7 @@ nn.on("load", () => {
       pos(rand(0, width()), rand(0, height())),
       scale(2),
       area(),
-      body(),
+      //body(), this is what caused the pot to fall
       anchor("center"),
       "Bpot"
     ]);
@@ -164,13 +169,19 @@ nn.on("load", () => {
     const enemy = add([ //Later change this to where the platforms are actually placed
       sprite("enemy"),
       scale(2),
-      pos(rand(100, width() - 100), rand(100, height() - 400)),
+      pos(rand(100, width() - 100), rand(100, height() - 100)),
       area(),
       anchor("center"),
       "enemy"
     ]);
     enemy.play("idle");
-
+    //Enemy timer spawn
+    wait(rand(2, 10), () => {
+      if (enemy.exists()) {
+        destroy(enemy);
+      }
+    })
+    // enemy timer
   }
 
   //Spawns in the enemies in a set wave; will later get rid of
@@ -200,7 +211,9 @@ nn.on("load", () => {
         size: 24,
       }),
       pos(24, 24),
-      color(BLACK),
+      color(WHITE),
+      fixed(),
+      z(100),//makes it so things dont overlap eachother
     ]);
     
     //Shows how much energy you have
@@ -208,22 +221,25 @@ nn.on("load", () => {
       text(energy.toString(), {
         size: 24,
       }),
-      pos(24, 35),
-      color(BLACK),
+      pos(24, 55),
+      color(BLUE),
+      fixed(),
+      z(100),
     ]);
     
     const timer = add([
     text(timeLeft.toFixed(0)),
     pos(width() - 24, 24),
     anchor("topright"),
-    color(BLACK),
-    fixed()
+    color(GREEN),
+      fixed(),
+      z(100),
     ]);
     
     //Adds player sprite to the game
     const player = add([
       sprite("wizard"),
-      pos(center()),
+      pos(100,height() - 160),
       anchor("center"),
       area(),
       scale(2),
@@ -236,26 +252,31 @@ nn.on("load", () => {
 
     //Lvl Exit
     const levelExit = add([
-      rect(10, height()),
-      pos(width() - 10, 0),
+      sprite("portal"),
+     // rect(30, 140),
+      pos(2670, height() - 290),
       area(),
-      color(GREEN),
+      scale(3),
+      //color(GREEN),
       "levelExit"
     ]);
 
     //Platform Setting
-    makePlatform(0, height() - 80);
-    makePlatform(100, height() - 200);
-    makePlatform(450, height() - 350);
-    makePlatform(200, height() - 500);
-    makePlatform(300, height() - 500);
-    makePlatform(990, height() - 400);
-    makePlatform(1200, height() - 450);
-    makePlatform(1150, height() - 650);
-    makePlatform(350, height() - 800);
-    makePlatform(1500, height() - 450);
-    makePlatform(1800, height() - 450);
-    makePlatform(2100, height() - 450);
+    //start
+    makePlatform(0, height() - 80, 350);
+    
+    makePlatform(420, height() - 170, 180);
+    makePlatform(680, height() - 260, 160);
+    makePlatform(920, height() - 170, 180);
+    //middle
+    makePlatform(1170, height() - 280, 180);
+    makePlatform(1430, height() - 190, 180);
+    makePlatform(1690, height() - 300, 180);
+    //end
+    makePlatform(1950, height() - 200, 180);
+    makePlatform(2200, height() - 290, 200);
+    makePlatform(2470, height() - 200, 250);
+  
 
     //Collectibles
     for (let i = 0; i < 5; i++) {
@@ -271,16 +292,18 @@ nn.on("load", () => {
     //Player Controls
     onButtonDown("moveRight", () => {
       // move right
-      player.move(SPEED, 0);
+      player.move(playerSpeed, 0);
       facing = RIGHT;
+      player.flipX= true;
       playSoundEffect();
       player.play("run");
     });
 
     onButtonDown("moveLeft", () => {
       // move left
-      player.move(-SPEED, 0);
+      player.move(-playerSpeed, 0);
       facing = LEFT;
+      player.flipX= false;
       playSoundEffect();
       player.play("run");
     });
@@ -342,6 +365,15 @@ nn.on("load", () => {
       play("drink");
       energy++;
       energyText.text = energy.toString();
+      
+      //speed boost
+      playerSpeed = BOOST_SPEED;
+      boostActive = true;
+      //boost timer
+      wait(6,() => {
+        playerSpeed = SPEED;
+        boostActive = false;
+      });
     });
 
 
@@ -405,7 +437,9 @@ nn.on("load", () => {
         size: 24,
       }),
       pos(24, 24),
-      color(BLACK),
+      color(WHITE),
+      fixed(),
+      z(100),
     ]);
     
     //Shows how much energy you have
@@ -413,21 +447,25 @@ nn.on("load", () => {
       text(energy.toString(), {
         size: 24,
       }),
-      pos(24, 35),
-      color(BLACK),
+      pos(24, 55),
+      color(BLUE),
+      fixed(),
+      z(100,)
     ]);
     
     const timer = add([
     text(timeLeft.toFixed(0)),
     pos(width() - 24, 24),
     anchor("topright"),
-    color(WHITE)
+    color(GREEN),
+      fixed(),
+      z(100),
     ]);
     
     //Adds player sprite to the game
     const player = add([
       sprite("wizard"),
-      pos(spawnSide === "left" ? 150 : width() - 150,  height() / 2),
+      pos(100,height() - 160),
       anchor("center"),
       area(),
       scale(2),
@@ -440,28 +478,35 @@ nn.on("load", () => {
 
     //Lvl Exit
     const levelExit = add([
-      rect(10, height()),
-      pos(width() - 10, 0),
+      sprite("portal"),
+     // rect(30, 140),
+      pos(2698, height() - 480),
       area(),
-      color(GREEN),
+      scale(3),
+      //color(GREEN),
       "levelExit"
     ]);
 
     //Platform Setting
-    makePlatform(0, height() - 80);
-    makePlatform(40, height() - 80);
-    makePlatform(80, height() - 80);
-    makePlatform(120, height() - 80);
-    makePlatform(100, height() - 200);
-    makePlatform(450, height() - 350);
-    makePlatform(200, height() - 500);
-    makePlatform(550, height() - 650);
-    makePlatform(350, height() - 800);
-    makePlatform(900, height() - 650);
-    makePlatform(1200, height() - 650);
-    makePlatform(1500, height() - 650);
-    makePlatform(1800, height() - 650);
-    makePlatform(2100, height() - 650);
+      //start
+    makePlatform(0, height() - 80, 220);
+      
+    makePlatform(300, height() - 190, 120);
+    makePlatform(500, height() - 330,110);
+    makePlatform(700, height() - 210,100);
+      //higher jumps
+    makePlatform(900, height() - 390,120);
+    makePlatform(1120, height() - 520, 100);
+    makePlatform(1320, height() - 370,110);
+      //middle
+    makePlatform(1540, height() - 540,100);
+    makePlatform(1750, height() - 400,100);
+    makePlatform(1950, height() - 570,100);
+      //end
+    makePlatform(2160, height() - 410,120);
+    makePlatform(2370, height() - 550,100);
+    makePlatform(2580, height() - 380,180);
+      
 
     //Collectibles
     for (let i = 0; i < 1; i++) {
@@ -477,16 +522,18 @@ nn.on("load", () => {
     //Player Controls
     onButtonDown("moveRight", () => {
       // move right
-      player.move(SPEED, 0);
+      player.move(playerSpeed, 0);
       facing = RIGHT;
+      player.flipX = true;
       playSoundEffect();
       player.play("run");
     });
 
     onButtonDown("moveLeft", () => {
       // move left
-      player.move(-SPEED, 0);
+      player.move(-playerSpeed, 0);
       facing = LEFT;
+      player.flipX = false;
       playSoundEffect();
       player.play("run");
     });
@@ -547,6 +594,14 @@ nn.on("load", () => {
       play("drink");
       energy++;
       energyText.text = energy.toString();
+       //speed boost
+      playerSpeed = BOOST_SPEED;
+      boostActive = true;
+      //boost timer
+      wait(6,() => {
+        playerSpeed = SPEED;
+        boostActive = false;
+      });
     });
 
     player.onCollide("enemy", () => {
