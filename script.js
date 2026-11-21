@@ -28,9 +28,11 @@ nn.on("load", () => {
   let timeLeft = 300;
   let healthText = 0;
   let energyText = 0;
-  let health = 0;
-  let energy = 0;
+  let hth = 0;
+  let ene = 0;
   let spawnSide = "left";
+  let hPoint;
+  let player;
   
   //Loading Sprites
   //Player
@@ -175,6 +177,14 @@ nn.on("load", () => {
       "enemy"
     ]);
     enemy.play("idle");
+    
+    //updates the enemy to go for the player. If the player passes wave 1, the code checks if there are two players and moves to the one where the player actually exists
+    enemy.onUpdate(() => {
+      if (player && player.exists()){
+        enemy.moveTo(player.pos, 70);
+      }
+    });
+    
     //Enemy timer spawn
     wait(rand(2, 10), () => {
       if (enemy.exists()) {
@@ -205,20 +215,34 @@ nn.on("load", () => {
     fixed(),
     ]);
     
+     //Adds player sprite to the game
+    player = add([
+      sprite("wizard"),
+      pos(100,height() - 160),
+      anchor("center"),
+      area(),
+      scale(2),
+      body({
+        jumpForce: JUMP_FORCE,
+      }),
+      doubleJump(),
+      health(3)
+    ]);
+    player.play("run");
     //shows how much health you have
     const heatlhText = add([
-      text(health.toString(), {
+      text(hth.toString(), {
         size: 24,
       }),
       pos(24, 24),
-      color(WHITE),
+      color(RED),
       fixed(),
       z(100),//makes it so things dont overlap eachother
     ]);
     
     //Shows how much energy you have
     const energyText = add([
-      text(energy.toString(), {
+      text(ene.toString(), {
         size: 24,
       }),
       pos(24, 55),
@@ -236,19 +260,25 @@ nn.on("load", () => {
       z(100),
     ]);
     
-    //Adds player sprite to the game
-    const player = add([
-      sprite("wizard"),
-      pos(100,height() - 160),
-      anchor("center"),
-      area(),
-      scale(2),
-      body({
-        jumpForce: JUMP_FORCE,
+
+    
+    //added this over here instead of the health section because this is where player is actually defined
+    const hPoint = add([
+      text("Health: " + player.hp(), {
+        size: 24,
       }),
-      doubleJump(),
+      pos(24, 75),
+      color(RED),
+      fixed(),
+      z(10)
     ]);
-    player.play("run");
+    player.onCollide("enemy", () => {
+    player.hurt(1);
+    hPoint.text = "Health: " + player.hp();
+    if (player.hp() <= 0) {
+      go("lose");
+    }
+  });
 
     //Lvl Exit
     const levelExit = add([
@@ -355,16 +385,16 @@ nn.on("load", () => {
       // collect logic
       destroy(item);
       play("drink");
-      health++;
-      healthText.text = health.toString();
+      hth++;
+      healthText.text = hth.toString();
     });
     
     player.onCollide("Bpot", (item) => {
       // collect logic
       destroy(item);
       play("drink");
-      energy++;
-      energyText.text = energy.toString();
+      ene++;
+      energyText.text = ene.toString();
       
       //speed boost
       playerSpeed = BOOST_SPEED;
@@ -377,11 +407,13 @@ nn.on("load", () => {
     });
 
 
+     //Added a collision to the enemy sprite where if the player touches it, it gets hurt and loses 1 health. 
     player.onCollide("enemy", () => {
-      // lose logic
-      go("lose");
-      play("dead");
-
+      player.hurt(1);
+      hPoint.text = "Health: " + player.hp();
+      if (player.hp() <= 0) {
+        go("lose");
+      }
     });
 
     //Bullet and enemy collision
@@ -433,7 +465,7 @@ nn.on("load", () => {
     
     //shows how much health you have
     const heatlhText = add([
-      text(health.toString(), {
+      text(hth.toString(), {
         size: 24,
       }),
       pos(24, 24),
@@ -444,7 +476,7 @@ nn.on("load", () => {
     
     //Shows how much energy you have
     const energyText = add([
-      text(energy.toString(), {
+      text(ene.toString(), {
         size: 24,
       }),
       pos(24, 55),
@@ -463,7 +495,7 @@ nn.on("load", () => {
     ]);
     
     //Adds player sprite to the game
-    const player = add([
+    player = add([
       sprite("wizard"),
       pos(100,height() - 160),
       anchor("center"),
@@ -473,6 +505,16 @@ nn.on("load", () => {
         jumpForce: JUMP_FORCE,
       }),
       doubleJump(),
+      health(3),
+    ]);
+    const hPoint = add([
+      text("Health: " + player.hp(), {
+        size: 24,
+      }),
+      pos(24, 75),
+      color(RED),
+      fixed(),
+      z(10)
     ]);
     player.play("run");
 
@@ -584,16 +626,16 @@ nn.on("load", () => {
       // collect logic
       destroy(item);
       play("drink");
-      health++;
-      healthText.text = health.toString();
+      hth++;
+      healthText.text = hth.toString();
     });
     
     player.onCollide("Bpot", (item) => {
       // collect logic
       destroy(item);
       play("drink");
-      energy++;
-      energyText.text = energy.toString();
+      ene++;
+      energyText.text = ene.toString();
        //speed boost
       playerSpeed = BOOST_SPEED;
       boostActive = true;
@@ -605,9 +647,11 @@ nn.on("load", () => {
     });
 
     player.onCollide("enemy", () => {
-      // lose logic
-      go("lose");
-      play("dead");
+      player.hurt(1);
+      hPoint.text = "Health: " + player.hp();
+      if (player.hp() <= 0) {
+        go("lose");
+      }
     });
 
     //Bullet and enemy collision
