@@ -378,8 +378,11 @@ nn.on("load", () => {
       // collect logic
       destroy(item);
       play("drink");
-      hth++;
-      healthText.text = hth.toString();
+      //Allows the player to heal until they reach 3 health
+      if (player.hp() < 3) {
+        player.heal(1);
+      }
+      hPoint.text = "Health: " + player.hp();
     });
     
     player.onCollide("Bpot", (item) => {
