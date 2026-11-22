@@ -184,15 +184,8 @@ nn.on("load", () => {
         enemy.moveTo(player.pos, 70);
       }
     });
-    
-    //Enemy timer spawn
-    wait(rand(2, 10), () => {
-      if (enemy.exists()) {
-        destroy(enemy);
-      }
-    })
-    // enemy timer
-  }
+  
+    }
 
   //Spawns in the enemies in a set wave; will later get rid of
   function spawnEnemyWave () {
@@ -731,7 +724,9 @@ nn.on("load", () => {
   ]);
     onKeyPress("enter", () => {
       gameScore = 0;
-      timeLeft = 30;
+      timeLeft = 300;
+      ene = 0;
+      hth = 0;
       go("level1");
     });
 });
