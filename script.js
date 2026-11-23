@@ -192,6 +192,56 @@ nn.on("load", () => {
     }
   }
   
+  //instructions screen
+  scene("instructions", () => {
+    add([
+      rect(width(), height()),
+      pos(0,0),
+      color(24, 28, 55),
+      fixed(),
+    ]);
+    add([
+      text("Night of the Mage", {size: 42}),
+      pos(center().x, 55),
+      anchor("center"),
+      color(YELLOW),
+      fixed(),
+    ]);
+    add([
+      text("HOW TO PLAY", {size: 28}),
+      pos(center().x,110),
+      anchor("center"),
+      color(WHITE),
+      fixed(),
+    ]);
+    const instructions = [
+      "Use arrow keys to move",
+      "Press F to shoot projectiles",
+      "collect red potions to increase health",
+      "collect blue potions to increase speed and",
+      "collect 3 blue potions to increase the size of projectile",
+    ];
+    instructions.forEach((line,i)=>{
+      add([
+        text(line, {size:19}),
+        pos(center().x,165+i*38),
+        anchor("center"),
+        color(WHITE),
+        fixed(),
+      ]);
+    });
+    add([
+      text("Press Enter To Start",{size:24}),
+      pos(center().x, height()-45),
+      anchor("center"),
+      color(YELLOW),
+      fixed(),
+    ]);
+    onKeyPress("enter", ()=>{
+      go("level1");
+    });
+  });
+  
   //1st level
   scene("level1", () => {
     setGravity(640);
