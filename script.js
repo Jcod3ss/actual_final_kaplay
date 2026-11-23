@@ -704,11 +704,14 @@ nn.on("load", () => {
 
     //Collectables
     player.onCollide("pot", (item) => {
-      // collect logic
       destroy(item);
       play("drink");
-      hth++;
-      healthText.text = hth.toString();
+
+      if (player.hp() < 3) {
+        player.heal(1);
+      }
+
+      hPoint.text = "Health: " + player.hp();
     });
 
     player.onCollide("Bpot", (item) => {
@@ -944,7 +947,7 @@ nn.on("load", () => {
     add([
       sprite("cannon"),
       pos(cannonX, cannonY),
-      scale(3),
+      scale(10),
       anchor("center"),
     ]);
 
@@ -1005,11 +1008,14 @@ nn.on("load", () => {
 
     //Collectables
     player.onCollide("pot", (item) => {
-      // collect logic
       destroy(item);
       play("drink");
-      hth++;
-      healthText.text = hth.toString();
+
+      if (player.hp() < 3) {
+        player.heal(1);
+      }
+
+      hPoint.text = "Health: " + player.hp();
     });
 
     player.onCollide("Bpot", (item) => {
