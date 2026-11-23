@@ -223,7 +223,63 @@ nn.on("load", () => {
     spawnEnemy();
     spawnEnemy();
   }
-
+  
+  //instructions scene
+scene("instructions", ()=>{
+  //background
+  add([
+    rect(width(), height()),
+    pos(0,0),
+    color(25,25,55),
+    fixed(),
+  ]);
+  //title
+  add([
+    text("night of the mage", {size: 42}),
+    pos(center().x, 55),
+    anchor("center"),
+    color(YELLOW),
+    fixed(),
+  ]);
+  add([
+    text("how to play", {size: 28}),
+    pos(center().x, 110),
+    anchor("center"),
+    color(WHITE),
+    fixed(),
+  ]);
+  
+  //instructions
+  const instructions = [
+    "use arrow keys to move",
+    "Press F to shoot spell",
+    "Press R after collecting 3 blue potions for bigger spell",
+    "collect blue poitions to increase speed",
+    "collect red potions to increase health",
+    "reach the portal to advance to next level",
+    "watch timer or you will LOSE!",
+  ];
+  instructions.forEach((line,i)=>{
+    add([
+      text(line,{size: 18}),
+      pos(center().x, 165 + i *38),
+      anchor("center"),
+      color(WHITE),
+      fixed(),
+    ]);
+  });
+  //start
+  add([
+    text("Press enter to start",{size: 24}),
+    pos(center().x, height()-40),
+    anchor("center"),
+    color(YELLOW),
+    fixed(),
+  ]);
+  onKeyPress("enter", ()=>{
+    go("level1");
+  });
+});
   //1st level
   scene("level1", () => {
     setGravity(640);
@@ -1144,7 +1200,7 @@ nn.on("load", () => {
     });
   });
 
-  go("level1");
+  go("instructions");
 
   play("bgm", {
     volume: 0.4,
