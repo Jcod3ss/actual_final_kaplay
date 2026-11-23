@@ -83,13 +83,18 @@ nn.on("load", () => {
     }
   });
   //Platform
-  loadSprite("ground", "assets/platform-1.png");
-  //Background
+  loadSprite("ground", "assets/platform.png");
+  //Backgrounds
   loadSprite("bg", "assets/game_bg.png");
+  loadSprite("bg2", "assets/cave_bg.png");
+  loadSprite("bg3", "assets/forest.png");
+  loadSprite("death", "assets/ls.gif");
   //Projectile
   loadSprite("knife", "assets/spell.png");
   //portal
   loadSprite("portal", "assets/portal.png");
+  //spawn
+  loadSprite("eSpawn", "assets/monstercannon.png");
   
   //Audio
   loadSound(
@@ -122,10 +127,10 @@ nn.on("load", () => {
   //Making Platforms with the sprite
   function makePlatform (x, y, w = 200) {
     add([
-      //sprite("ground"),
-      rect(w, 40),
+      sprite("ground"),
+      //rect(w, 40),
       outline(6),
-      scale(1),
+      scale(5),
       area(),
       pos(x, y),
       body({
@@ -223,7 +228,7 @@ nn.on("load", () => {
     ]);
     player.play("run");
     //shows how much health you have
-    const heatlhText = add([
+    /** const heatlhText = add([
       text(hth.toString(), {
         size: 24,
       }),
@@ -231,11 +236,11 @@ nn.on("load", () => {
       color(RED),
       fixed(),
       z(100),//makes it so things dont overlap eachother
-    ]);
+    ]); **/
     
     //Shows how much energy you have
     const energyText = add([
-      text(ene.toString(), {
+      text("Energy: " + ene.toString(), {
         size: 24,
       }),
       pos(24, 55),
@@ -260,7 +265,7 @@ nn.on("load", () => {
       text("Health: " + player.hp(), {
         size: 24,
       }),
-      pos(24, 75),
+      pos(24, 25),
       color(RED),
       fixed(),
       z(10)
@@ -352,6 +357,26 @@ nn.on("load", () => {
       ]);
     }
     onKeyPress("f", shoot);
+    
+    function exAtk () {
+      if (ene >= 3) {
+        ene -= 3;
+        energyText.text = "Energy: " + ene.toString();
+      }
+      add([
+        sprite("knife"),
+        pos(player.pos),
+        anchor("center"),
+        area(),
+        move(facing, 500),
+        scale(5),
+        offscreen({
+          destroy: true
+        }),
+        "bullet",
+      ]);
+    }
+    onKeyPress("r", exAtk);
 
 
     // CAMERA
@@ -368,6 +393,11 @@ nn.on("load", () => {
       timer.text = timeLeft.toFixed(1);
       // lose check
       if (timeLeft <= 0) {
+        go("lose");
+      }
+      
+      //if player falls beyond this limit, the game will go to lose
+      if (player.pos.y > height() + 250) {
         go("lose");
       }
     });
@@ -390,7 +420,7 @@ nn.on("load", () => {
       destroy(item);
       play("drink");
       ene++;
-      energyText.text = ene.toString();
+      energyText.text = "Energy: " + ene.toString();
       
       //speed boost
       playerSpeed = BOOST_SPEED;
@@ -453,26 +483,27 @@ nn.on("load", () => {
     
     //adds background
     add([
-    sprite("bg"),
+    sprite("bg2"),
     pos(0, 0),
-    scale(20),
+    scale(15),
     fixed(),
     ]);
     
     //shows how much health you have
+      /**
     const heatlhText = add([
       text(hth.toString(), {
         size: 24,
       }),
       pos(24, 24),
-      color(WHITE),
+      color(RED),
       fixed(),
       z(100),
-    ]);
+    ]); **/
     
     //Shows how much energy you have
     const energyText = add([
-      text(ene.toString(), {
+      text("Energy: " + ene.toString(), {
         size: 24,
       }),
       pos(24, 55),
@@ -507,7 +538,7 @@ nn.on("load", () => {
       text("Health: " + player.hp(), {
         size: 24,
       }),
-      pos(24, 75),
+      pos(24, 25),
       color(RED),
       fixed(),
       z(10)
@@ -597,6 +628,26 @@ nn.on("load", () => {
       ]);
     }
     onKeyPress("f", shoot);
+      
+    function exAtk () {
+      if (ene >= 3) {
+        ene -= 3;
+        energyText.text = "Energy: " + ene.toString();
+      }
+      add([
+        sprite("knife"),
+        pos(player.pos),
+        anchor("center"),
+        area(),
+        move(facing, 500),
+        scale(6),
+        offscreen({
+          destroy: true
+        }),
+        "bullet",
+      ]);
+    }
+    onKeyPress("r", exAtk);
 
 
     // CAMERA
@@ -615,6 +666,10 @@ nn.on("load", () => {
       if (timeLeft <= 0) {
         go("lose");
       }
+      //copied and pasted from above
+      if (player.pos.y > height() + 250) {
+        go("lose");
+      }
     });
 
     //Collectables
@@ -631,7 +686,7 @@ nn.on("load", () => {
       destroy(item);
       play("drink");
       ene++;
-      energyText.text = ene.toString();
+      energyText.text = "Energy: " + ene.toString();
        //speed boost
       playerSpeed = BOOST_SPEED;
       boostActive = true;
@@ -711,19 +766,29 @@ nn.on("load", () => {
   
   //Lose scene
   scene("lose", () => {
+    add([
+    sprite("death", {
+      width: width(),
+      height: height(),
+    }),
+      pos(0, 0),
+      fixed(),
+      
+    ]);
+    
   add([
     text("YOU LOSE", {
       size: 48,
     }),
     pos(center()),
     anchor("center"),
-    color(BLACK),
+    color(YELLOW),
   ]);
     add([
     text("Press ENTER to play again"),
     pos(center().add(0, 120)),
     anchor("center"),
-    color(BLACK),
+    color(YELLOW),
   ]);
     onKeyPress("enter", () => {
       gameScore = 0;
