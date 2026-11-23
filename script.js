@@ -399,7 +399,7 @@ nn.on("load", () => {
 
 
     // CAMERA
-    setCamScale(1.5);
+    setCamScale(1);
     // camera follow
     player.onUpdate(() => {
       setCamPos(player.pos);
@@ -681,7 +681,7 @@ nn.on("load", () => {
 
 
     // CAMERA
-    setCamScale(1.5);
+    setCamScale(1);
     // camera follow
     player.onUpdate(() => {
       setCamPos(player.pos);
@@ -982,7 +982,7 @@ nn.on("load", () => {
     });
 
     // CAMERA
-    setCamScale(1.5);
+    setCamScale(1);
     // camera follow
     player.onUpdate(() => {
       setCamPos(player.pos);
